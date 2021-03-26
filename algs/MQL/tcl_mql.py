@@ -23,6 +23,7 @@ class TCLMQL:
                 policy_freq = 2,
                 batch_size = 100,
                 embedding_batch_size=2048,
+                contrastive_temperature=1,
                 optim_method = '',
                 max_action = None,
                 max_iter_logistic = 2000,
@@ -62,6 +63,7 @@ class TCLMQL:
         self.max_action = max_action
         self.batch_size = batch_size
         self.embedding_batch_size = embedding_batch_size
+        self.contrastive_temperature = contrastive_temperature
         self.max_iter_logistic = max_iter_logistic
         self.beta_clip = beta_clip
         self.enable_beta_obs_cxt = enable_beta_obs_cxt
@@ -334,7 +336,7 @@ class TCLMQL:
         labels = torch.arange(mean_dist.shape[0]).to(self.device)
         # Using negative wasserstein distance for lower distance means more similar
         loss_fun = torch.nn.CrossEntropyLoss()
-        loss = loss_fun(-mean_dist, labels)
+        loss = self.contrastive_temperature * loss_fun(-mean_dist, labels)
         return loss
 
     def do_training(self,
