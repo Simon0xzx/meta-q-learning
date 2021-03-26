@@ -66,6 +66,7 @@ parser.add_argument('--beta_clip', default=1.2, type=float, help='Range to clip 
 parser.add_argument('--snapshot_size', type=int, default = 2000, help ='Snapshot size for a task')
 parser.add_argument('--prox_coef', default=0.1, type=float, help ='Prox lambda')
 parser.add_argument('--meta_batch_size', default=10, type=int, help ='Meta batch size: number of sampled tasks per itr')
+parser.add_argument('--embedding_batch_size', default=2048, type=int, help ='Batch Size to conduct contrastive learning') # TODO Added in iter 2 4096->2048
 parser.add_argument('--enable_adaptation', default=True, action='store_true')
 parser.add_argument('--main_snap_iter_nums', default=400, type=int, help ='how many times adapt using train task but with csc')
 parser.add_argument('--snap_iter_nums', default=5, type=int, help ='how many times adapt using eval task')
@@ -80,6 +81,8 @@ parser.add_argument('--use_normalized_beta', default=False, action='store_true',
 parser.add_argument('--reset_optims', default=False, action='store_true', help = 'init optimizers at the start of adaptation')
 parser.add_argument('--lr_milestone', default = -1, type=int, help = 'reduce learning rate after this epoch')
 parser.add_argument('--lr_gamma', default = 0.8, type=float, help = 'learning rate decay')
+parser.add_argument('--enable_context_masking', default=True, action='store_true', help='if true concat obs + context') # TODO added in iter 2 -> set true
+
 
 def update_lr(eparams, iter_num, alg_mth):
     #######
@@ -562,6 +565,7 @@ if __name__ == "__main__":
                                  input_dim=input_dim_context,
                                  output_dim=args.output_dim_conext,
                                  action_dim=action_dim,
+                                 enable_masking=args.enable_context_masking,
                                  obsr_dim=env.observation_space.shape[0],
                                  device=device).to(device)
 
@@ -594,6 +598,7 @@ if __name__ == "__main__":
                         noise_clip = args.noise_clip,
                         policy_freq = args.policy_freq,
                         batch_size = args.batch_size,
+                        embedding_batch_size=args.embedding_batch_size,
                         max_action = max_action,
                         beta_clip = args.beta_clip,
                         prox_coef = args.prox_coef,

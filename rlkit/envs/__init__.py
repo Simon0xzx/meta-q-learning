@@ -23,4 +23,7 @@ def register_env(name):
 for file in os.listdir(os.path.dirname(__file__)):
     if file.endswith('.py') and not file.startswith('_'):
         module = file[:file.find('.py')]
+        # Skip 2 problematic envs
+        if module == "hopper_rand_params_wrapper" or module == "walker_rand_params_wrapper":
+            continue
         importlib.import_module('rlkit.envs.' + module)

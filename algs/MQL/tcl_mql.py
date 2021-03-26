@@ -22,6 +22,7 @@ class TCLMQL:
                 noise_clip = 0.5,
                 policy_freq = 2,
                 batch_size = 100,
+                embedding_batch_size=2048,
                 optim_method = '',
                 max_action = None,
                 max_iter_logistic = 2000,
@@ -60,6 +61,7 @@ class TCLMQL:
         self.noise_clip = noise_clip
         self.max_action = max_action
         self.batch_size = batch_size
+        self.embedding_batch_size = embedding_batch_size
         self.max_iter_logistic = max_iter_logistic
         self.beta_clip = beta_clip
         self.enable_beta_obs_cxt = enable_beta_obs_cxt
@@ -87,10 +89,14 @@ class TCLMQL:
             self.actor_optimizer = optim.Adam(self.actor.parameters(), lr = lr)
             self.critic_optimizer = optim.Adam(self.critic.parameters(), lr = lr)
             self.context_optimizer = optim.Adam(self.context.network[0].parameters(), lr = lr)
+            if context.enable_masking:
+                self.context_mlp_optimizer = optim.Adam(self.context.network[2].parameters(), lr = lr)
         else:
             self.actor_optimizer = optim.Adam(self.actor.parameters())
             self.critic_optimizer = optim.Adam(self.critic.parameters())
             self.context_optimizer = optim.Adam(self.context.network[0].parameters())
+            if context.enable_masking:
+                self.context_mlp_optimizer = optim.Adam(self.context.network[2].parameters())
 
         print('-----------------------------')
         print('Optim Params')
@@ -294,9 +300,9 @@ class TCLMQL:
 
         return f_score, None
 
-    def calc_contrastive_loss(self, replay_buffer, embedding_batch = 4096):
+    def calc_contrastive_loss(self, replay_buffer):
         # Take this short segment of trajectory as a path
-        x, y, u, r, d, pu, pr, px, nu, nr, nx = replay_buffer.sample(batch_size=embedding_batch)
+        x, y, u, r, d, pu, pr, px, nu, nr, nx = replay_buffer.sample(batch_size=self.embedding_batch_size)
         previous_action = torch.FloatTensor(pu).to(self.device)
         previous_reward = torch.FloatTensor(pr).to(self.device)
         previous_obs = torch.FloatTensor(px).to(self.device)
@@ -313,7 +319,7 @@ class TCLMQL:
         next_window = [hist_actions, hist_rewards, hist_obs]  # torch.cat([action, reward], dim = -1)
         pre_window = [previous_action, previous_reward, previous_obs]  # torch.cat([previous_action, previous_reward], dim = -1)
 
-        query_latent = self.context(next_window)
+        query_latent = self.context.get_query_latent(next_window)
         # pre_query_latent = self.context(pre_window)
         # query_latent = torch.cat([next_query_latent, pre_query_latent], dim = 0)
         key_latent = self.context.get_key_latent(pre_window)
@@ -446,6 +452,8 @@ class TCLMQL:
 
             contrastive_loss.backward()
             self.context_optimizer.step()
+            if self.context.enable_masking:
+                self.context_mlp_optimizer.step()
             contrastive_loss_out += contrastive_loss.item()
             ########
             # Delayed policy updates
@@ -478,6 +486,10 @@ class TCLMQL:
 
                 for param, target_param in zip(self.context.network[0].parameters(), self.context.network[1].parameters()):
                     target_param.data.copy_(self.ptau * param.data + (1 - self.ptau) * target_param.data)
+
+                if self.context.enable_masking:
+                    for param, target_param in zip(self.context.network[2].parameters(), self.context.network[3].parameters()):
+                        target_param.data.copy_(self.ptau * param.data + (1 - self.ptau) * target_param.data)
 
         out = {}
         if iterations == 0:

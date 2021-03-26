@@ -110,6 +110,7 @@ class TCLContext(nn.Module):
                  input_dim = None,
                  action_dim = None,
                  obsr_dim = None,
+                 enable_masking = False,
                  device = 'cpu'):
 
         super(TCLContext, self).__init__()
@@ -119,6 +120,7 @@ class TCLContext(nn.Module):
         self.device = device
         self.action_dim = action_dim
         self.obsr_dim = obsr_dim
+        self.enable_masking = enable_masking
 
         #### build LSTM or GRU for both query and key
         self.query_recur = nn.GRU(self.input_dim,
@@ -126,13 +128,16 @@ class TCLContext(nn.Module):
                                 bidirectional = False,
                                 batch_first = True,
                                 num_layers = 1)
-        # self.query_mlp = nn.Sequential(
-        #     nn.Linear(input_dim, 100),
-        #     nn.ReLU(),
-        #     nn.Linear(100, self.output_dim),
-        #     nn.ReLU())
-
         self.key_recur = copy.deepcopy(self.query_recur)
+
+        if self.enable_masking:
+            self.query_mlp = nn.Sequential(
+                nn.Linear(input_dim, 200),
+                nn.ReLU(),
+                nn.Linear(100, self.output_dim),
+                nn.ReLU())
+            self.key_mlp = copy.deepcopy(self.query_mlp)
+
 
     def init_recurrent(self, bsize = None):
         '''
@@ -159,43 +164,30 @@ class TCLContext(nn.Module):
 
         # lstm/gru
         _, hidden = self.key_recur(pre_act_rew, hidden)  # hidden is (1, B, hidden_size)
-        out = hidden.squeeze(0)  # (1, B, hidden_size) ==> (B, hidden_size)
+        if self.enable_masking:
+            hidden = self.key_mlp(hidden)
 
-        return out
+        return hidden.squeeze(0)  # (1, B, hidden_size) ==> (B, hidden_size)
 
-    # def get_query_z(self, data):
-    #     previous_action, previous_reward, pre_x = data[0], data[1], data[2]
-    #
-    #     # first prepare data for LSTM
-    #     bsize, dim = previous_action.shape  # previous_action is B* (history_len * D)
-    #     pacts = previous_action.view(bsize, -1, self.action_dim)  # view(bsize, self.hist_length, -1)
-    #     prews = previous_reward.view(bsize, -1, 1)  # reward dim is 1, view(bsize, self.hist_length, 1)
-    #     pxs = pre_x.view(bsize, -1, self.obsr_dim)  # view(bsize, self.hist_length, -1)
-    #     pre_act_rew = torch.cat([pacts, prews, pxs], dim=-1)  # input to LSTM is [action, reward]
-    #     # init lstm/gru
-    #     hidden = self.init_recurrent(bsize=bsize)
-    #
-    #     # lstm/gru
-    #     _, hidden = self.query_recur(pre_act_rew, hidden)  # hidden is (1, B, hidden_size)
-    #     out = self.query_mlp(hidden)
-    #     return out.squeeze(0)
-    #
-    # def get_key_z(self, data):
-    #     previous_action, previous_reward, pre_x = data[0], data[1], data[2]
-    #
-    #     # first prepare data for LSTM
-    #     bsize, dim = previous_action.shape  # previous_action is B* (history_len * D)
-    #     pacts = previous_action.view(bsize, -1, self.action_dim)  # view(bsize, self.hist_length, -1)
-    #     prews = previous_reward.view(bsize, -1, 1)  # reward dim is 1, view(bsize, self.hist_length, 1)
-    #     pxs = pre_x.view(bsize, -1, self.obsr_dim)  # view(bsize, self.hist_length, -1)
-    #     pre_act_rew = torch.cat([pacts, prews, pxs], dim=-1)  # input to LSTM is [action, reward]
-    #     # init lstm/gru
-    #     hidden = self.init_recurrent(bsize=bsize)
-    #
-    #     # lstm/gru
-    #     _, hidden = self.key_recur(pre_act_rew, hidden)  # hidden is (1, B, hidden_size)
-    #     out = self.key_mlp(hidden)
-    #     return out.squeeze(0)
+    def get_query_latent(self, data):
+        previous_action, previous_reward, pre_x = data[0], data[1], data[2]
+
+        # first prepare data for LSTM
+        bsize, dim = previous_action.shape  # previous_action is B* (history_len * D)
+        pacts = previous_action.view(bsize, -1, self.action_dim)  # view(bsize, self.hist_length, -1)
+        prews = previous_reward.view(bsize, -1, 1)  # reward dim is 1, view(bsize, self.hist_length, 1)
+        pxs = pre_x.view(bsize, -1, self.obsr_dim)  # view(bsize, self.hist_length, -1)
+        pre_act_rew = torch.cat([pacts, prews, pxs], dim=-1)  # input to LSTM is [action, reward]
+
+        # init lstm/gru
+        hidden = self.init_recurrent(bsize=bsize)
+
+        # lstm/gru
+        _, hidden = self.query_recur(pre_act_rew, hidden)  # hidden is (1, B, hidden_size)
+        if self.enable_masking:
+            hidden = self.query_mlp(hidden)
+
+        return hidden.squeeze(0)  # (1, B, hidden_size) ==> (B, hidden_size)
 
     def forward(self, data):
         '''
@@ -223,4 +215,4 @@ class TCLContext(nn.Module):
 
     @property
     def network(self):
-        return [self.query_recur, self.key_recur]
+        return [self.query_recur, self.key_recur, self.query_mlp, self.key_mlp]

@@ -10,16 +10,16 @@ python tcl_main.py  --log_id sweep_into --env_name metaworld-ml1-sweep-into-v1 -
 
 
 --namazu--
-python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 1
-python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 1
-python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 1
-python tcl_main.py  --log_id tcl_mql --env_name metaworld-ml1-reach-wall-v1 --seed 2 --gpu_id 2
-python tcl_main.py  --log_id tcl_mql --env_name metaworld-ml1-sweep-into-v1 --seed 2 --gpu_id 2
+conda activate pearl;python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 1
+conda activate pearl;python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 1
+conda activate pearl;python tcl_main.py --log_id tcl_mql --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 2
+conda activate pearl;python tcl_main.py  --log_id tcl_mql --env_name metaworld-ml1-reach-wall-v1 --seed 2 --gpu_id 2
+conda activate pearl;python tcl_main.py  --log_id tcl_mql --env_name metaworld-ml1-sweep-into-v1 --seed 2 --gpu_id 3
 
 
 --mql--
-python main.py  --log_id mql --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 2
-python main.py  --log_id mql --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 3
-python main.py  --log_id mql --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 3
-python main.py  --log_id mql --env_name metaworld-ml1-reach-wall-v1 --seed 2 --gpu_id 3
-python main.py  --log_id mql --env_name metaworld-ml1-sweep-into-v1 --seed 2 --gpu_id 4
+conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 3
+conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 4
+conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 4
+conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-reach-wall-v1 --seed 2 --gpu_id 5
+conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-sweep-into-v1 --seed 2 --gpu_id 5
