@@ -11,16 +11,16 @@ from misc.torch_utility import get_state
 from misc.utils import set_global_seeds, safemean, read_json
 from misc import logger
 from algs.MQL.buffer import Buffer
+from misc.utils import get_action_info
 
 parser = argparse.ArgumentParser()
-
 # Optim params
 parser.add_argument('--lr', type=float, default=0.0003, help = 'Learning rate')
 parser.add_argument('--replay_size', type=int, default = 1e6, help ='Replay buffer size int(1e6)')
 parser.add_argument('--ptau', type=float, default=0.005 , help = 'Interpolation factor in polyak averaging')
 parser.add_argument('--gamma', type=float, default=0.99, help = 'Discount factor [0,1]')
 parser.add_argument("--burn_in", default=1e4, type=int, help = 'How many time steps purely random policy is run for') 
-parser.add_argument("--total_timesteps", default=2.5e6, type=float, help = 'Total number of timesteps to train on')
+parser.add_argument("--total_timesteps", default=1e6, type=float, help = 'Total number of timesteps to train on')
 parser.add_argument("--expl_noise", default=0.2, type=float, help='Std of Gaussian exploration noise')
 parser.add_argument("--batch_size", default=256, type=int, help = 'Batch size for both actor and critic')
 parser.add_argument("--policy_noise", default=0.4, type=float, help =' Noise added to target policy during critic update')
@@ -37,16 +37,15 @@ parser.add_argument('--disable_cuda', default=False, action='store_true')
 parser.add_argument('--cuda_deterministic', default=True, action='store_true')
 parser.add_argument("--gpu_id", default=1, type=int)
 
-parser.add_argument('--log_id', default='default')
-parser.add_argument('--check_point_dir', default='./data/ck')
-parser.add_argument('--log_dir', default='./result/mql_ml1/')
+parser.add_argument('--log_id', default='tcl_mql')
+parser.add_argument('--log_dir', default='./result/tcl_mql_ml1/')
 parser.add_argument('--log_interval', type=int, default=10, help='log interval, one log per n updates')
 parser.add_argument('--save_freq', type=int, default = 250)
 parser.add_argument("--eval_freq", default=10000, type=float, help = 'How often (time steps) we evaluate')
 parser.add_argument("--num_evals", default=4, type=int, help = 'tasks parameters number of task evaluated')
 
 # Env
-parser.add_argument('--env_configs', default='./configs/pearl_envs.json')
+parser.add_argument('--env_configs', default='./configs/metaworld_envs.json')
 parser.add_argument('--max_path_length', type=int, default = 200)
 parser.add_argument('--enable_train_eval', default=False, action='store_true')
 parser.add_argument('--enable_promp_envs', default=False, action='store_true')
@@ -127,14 +126,14 @@ def take_snapshot(args, ck_fname_part, model, update):
 def setup_logAndCheckpoints(args):
 
     # create folder if not there
-    create_dir(args.check_point_dir)
+    create_dir(args.log_dir)
 
     fname = str.lower(args.env_name) + '_' + args.alg_name + '_' + args.log_id
     fname_log = os.path.join(args.log_dir, fname)
     fname_eval = os.path.join(fname_log, 'eval.csv')
     fname_adapt = os.path.join(fname_log, 'adapt.csv')
 
-    return os.path.join(args.check_point_dir, fname), fname_log, fname_eval, fname_adapt
+    return os.path.join(args.log_dir, fname), fname_log, fname_eval, fname_adapt
 
 def make_env(eparams):
     '''
@@ -249,8 +248,8 @@ def evaluate_policy(eval_env,
             dc_rewards.append(avg_data_collection)
             print('--------Adaptation-----------')
             print('Task: ', tidx)
-            print(("critic_loss: %.4f \n\ractor_loss: %.4f \n\rNo beta_score: %.4f ") %
-                  (stats_csv['critic_loss'], stats_csv['actor_loss'], stats_csv['beta_score']))
+            print(("critic_loss: %.4f \n\ractor_loss: %.4f \n\rcontrastive_loss: %.4f \n\rNo beta_score: %.4f ") %
+                  (stats_csv['critic_loss'], stats_csv['actor_loss'], stats_csv['contrastive_loss'], stats_csv['beta_score']))
             print(("\rsamples for CSC: (%d, %d) \n\rAccuracy on train: %.4f \n\rsnap_iter: %d ") %
                   (stats_csv['csc_info'][0], stats_csv['csc_info'][1], stats_csv['csc_info'][2], stats_csv['snap_iter']))
             print(("\rmain_critic_loss: %.4f \n\rmain_actor_loss: %.4f \n\rmain_beta_score: %.4f ") %
@@ -510,7 +509,7 @@ if __name__ == "__main__":
     ######### Build Networks
     max_action = float(env.action_space.high[0])
     if len(env.observation_space.shape) == 1:
-        import models.networks as net
+        import models.tcl_networks as net
 
         ######
         # This part to add context network
@@ -536,61 +535,35 @@ if __name__ == "__main__":
             input_dim_context = None
             args.output_dim_conext = 0
 
-        actor_net = net.Actor(action_space = env.action_space,
-                              hidden_sizes =args.hidden_sizes,
-                              input_dim = actor_idim,
-                              max_action = max_action,
-                              enable_context = args.enable_context,
-                              hiddens_dim_conext = args.hiddens_conext,
-                              input_dim_context = input_dim_context,
-                              output_conext = args.output_dim_conext,
-                              only_concat_context = args.only_concat_context,
-                              history_length = args.history_length,
-                              obsr_dim = env.observation_space.shape[0],
-                              device = device
-                              ).to(device)
+        actor_net = net.TCLActor(action_space = env.action_space,
+                                 hidden_sizes =args.hidden_sizes,
+                                 input_dim = actor_idim,
+                                 max_action = max_action,
+                                 latent_dim=args.output_dim_conext).to(device)
 
-        actor_target_net = net.Actor(action_space = env.action_space,
-                                    hidden_sizes =args.hidden_sizes,
-                                    input_dim = actor_idim,
-                                    max_action = max_action,
-                                    enable_context = args.enable_context,
-                                    hiddens_dim_conext = args.hiddens_conext,
-                                    input_dim_context = input_dim_context,
-                                    output_conext = args.output_dim_conext,
-                                    only_concat_context = args.only_concat_context,
-                                    history_length = args.history_length,
-                                    obsr_dim = env.observation_space.shape[0],
-                                    device = device
-                                     ).to(device)
-
-        critic_net = net.Critic(action_space = env.action_space,
-                                hidden_sizes =args.hidden_sizes,
-                                input_dim = env.observation_space.shape,
-                                enable_context = args.enable_context,
-                                dim_others = dim_others,
-                                hiddens_dim_conext = args.hiddens_conext,
-                                input_dim_context = input_dim_context,
-                                output_conext = args.output_dim_conext,
-                                only_concat_context = args.only_concat_context,
-                                history_length = args.history_length,
-                                obsr_dim = env.observation_space.shape[0],
-                                device = device
-                                ).to(device)
-
-        critic_target_net = net.Critic(action_space = env.action_space,
+        actor_target_net = net.TCLActor(action_space = env.action_space,
                                         hidden_sizes =args.hidden_sizes,
-                                        input_dim = env.observation_space.shape,
-                                        enable_context = args.enable_context,
-                                        dim_others = dim_others,
-                                        hiddens_dim_conext = args.hiddens_conext,
-                                        input_dim_context = input_dim_context,
-                                        output_conext = args.output_dim_conext,
-                                        only_concat_context = args.only_concat_context,
-                                        history_length = args.history_length,
-                                        obsr_dim = env.observation_space.shape[0],
-                                        device = device
-                                       ).to(device)
+                                        input_dim = actor_idim,
+                                        max_action = max_action,
+                                        latent_dim=args.output_dim_conext).to(device)
+
+        critic_net = net.TCLCritic(action_space = env.action_space,
+                                   hidden_sizes =args.hidden_sizes,
+                                   input_dim = env.observation_space.shape,
+                                   latent_dim=args.output_dim_conext).to(device)
+
+        critic_target_net = net.TCLCritic(action_space = env.action_space,
+                                          hidden_sizes =args.hidden_sizes,
+                                          input_dim = env.observation_space.shape,
+                                          latent_dim=args.output_dim_conext).to(device)
+
+        action_dim, action_space_type = get_action_info(env.action_space)
+        context = net.TCLContext(hidden_sizes=args.hiddens_conext,
+                                 input_dim=input_dim_context,
+                                 output_dim=args.output_dim_conext,
+                                 action_dim=action_dim,
+                                 obsr_dim=env.observation_space.shape[0],
+                                 device=device).to(device)
 
     else:
         raise ValueError("%s model is not supported for %s env" % (args.env_name, env.observation_space.shape))
@@ -607,12 +580,13 @@ if __name__ == "__main__":
         # tdm3 uses specific runner
         from misc.runner_multi_snapshot import Runner
         from algs.MQL.multi_tasks_snapshot import MultiTasksSnapshot
-        import algs.MQL.mql as alg
+        import algs.MQL.tcl_mql as alg
 
-        alg = alg.MQL(actor = actor_net,
+        alg = alg.TCLMQL(actor = actor_net,
                         actor_target = actor_target_net,
                         critic = critic_net,
                         critic_target = critic_target_net,
+                        context = context,
                         lr = args.lr,
                         gamma=args.gamma,
                         ptau = args.ptau,
@@ -819,6 +793,7 @@ if __name__ == "__main__":
                 logger.record_tabular("total_timesteps", update_iter)
                 logger.record_tabular("critic_loss", float(alg_stats['critic_loss']))
                 logger.record_tabular("actor_loss", float(alg_stats['actor_loss']))
+                logger.record_tabular("contrastive_loss", float(alg_stats['contrastive_loss']))
                 logger.record_tabular("episode_reward", float(data['episode_reward']))
                 logger.record_tabular('eprewmean', float(safemean([epinfo['r'] for epinfo in epinfobuf])))
                 logger.record_tabular('eplenmean', float(safemean([epinfo['l'] for epinfo in epinfobuf])))
@@ -840,8 +815,8 @@ if __name__ == "__main__":
 
                 #print out some info about CSC
                 if stats_csv:
-                    print(("CSC info:  critic_loss: %.4f actor_loss: %.4f No beta_score: %.4f ") %
-                          (stats_csv['critic_loss'], stats_csv['actor_loss'], stats_csv['beta_score']))
+                    print(("CSC info:  critic_loss: %.4f actor_loss: %.4f contrastive_loss: %.4f No beta_score: %.4f ") %
+                          (stats_csv['critic_loss'], stats_csv['actor_loss'], stats_csv['contrastive_loss'], stats_csv['beta_score']))
                     if 'csc_info' in stats_csv:
                         print(("Number of examples used for CSC, prediction accuracy on train, and snap Iter: single: %d multiple tasks: %d  acc: %.4f snap_iter: %d ") %
                             (stats_csv['csc_info'][0], stats_csv['csc_info'][1], stats_csv['csc_info'][2], stats_csv['snap_iter']))

@@ -82,6 +82,42 @@ def walker_rand_params(seed, log_id, gpu_id):
 	' --log_id ' + log_id + ' --seed ' + str(seed) + ' --gpu_id ' + str(gpu_id)
 	return cmd
 
+def ml1_push(seed, log_id, gpu_id):
+	cmd = " python3 main.py --env_name metaworld-ml1-push-v1 --alg_name mql --policy_freq 4 \
+		--expl_noise 0.2 --enable_context  --num_train_steps 1000 \
+		--cuda_deterministic  --history_length  25  --beta_clip 1.2 \
+		--enable_adaptation  --num_initial_steps 1500 --main_snap_iter_nums 400 \
+		--snap_iter_nums 5 --hidden_sizes  300 300  --lam_csc  0.05 \
+		--snapshot_size 2000 --lr  0.0003 --sample_mult 5  --use_epi_len_steps \
+		--unbounded_eval_hist  --hiddens_conext 30  --num_tasks_sample 5 --burn_in  10000 \
+		--batch_size 256 --policy_noise 0.4 --eval_freq 10000 --replay_size 1000000 " + \
+		  ' --log_id ' + log_id + ' --seed ' + str(seed) + ' --gpu_id ' + str(gpu_id)
+	return cmd
+
+def ml1_reach(seed, log_id, gpu_id):
+	cmd = " python3 main.py --env_name metaworld-ml1-reach-v1 --alg_name mql --policy_freq 4 \
+		--expl_noise 0.2 --enable_context  --num_train_steps 1000 \
+		--cuda_deterministic  --history_length  25  --beta_clip 1.2 \
+		--enable_adaptation  --num_initial_steps 1500 --main_snap_iter_nums 400 \
+		--snap_iter_nums 5 --hidden_sizes  300 300  --lam_csc  0.05 \
+		--snapshot_size 2000 --lr  0.0003 --sample_mult 5  --use_epi_len_steps \
+		--unbounded_eval_hist  --hiddens_conext 30  --num_tasks_sample 5 --burn_in  10000 \
+		--batch_size 256 --policy_noise 0.4 --eval_freq 10000 --replay_size 1000000 " + \
+		  ' --log_id ' + log_id + ' --seed ' + str(seed) + ' --gpu_id ' + str(gpu_id)
+	return cmd
+
+def ml1_pick_place(seed, log_id, gpu_id):
+	cmd = " python3 main.py --env_name metaworld-ml1-pick-place-v1 --alg_name mql --policy_freq 4 \
+		--expl_noise 0.2 --enable_context  --num_train_steps 1000 \
+		--cuda_deterministic  --history_length  25  --beta_clip 1.2 \
+		--enable_adaptation  --num_initial_steps 1500 --main_snap_iter_nums 400 \
+		--snap_iter_nums 5 --hidden_sizes  300 300  --lam_csc  0.05 \
+		--snapshot_size 2000 --lr  0.0003 --sample_mult 5  --use_epi_len_steps \
+		--unbounded_eval_hist  --hiddens_conext 30  --num_tasks_sample 5 --burn_in  10000 \
+		--batch_size 256 --policy_noise 0.4 --eval_freq 10000 --replay_size 1000000 " + \
+		  ' --log_id ' + log_id + ' --seed ' + str(seed) + ' --gpu_id ' + str(gpu_id)
+	return cmd
+
 if __name__ == "__main__":
 
 
@@ -114,6 +150,14 @@ if __name__ == "__main__":
 	elif args.env_name  == 'walker-rand-params':
 		cmd = walker_rand_params(args.seed, args.log_id, args.gpu_id)
 
+	elif args.env_name == 'metaworld-ml1-push-v1':
+		cmd = ml1_push(args.seed, args.log_id, args.gpu_id)
+
+	elif args.env_name == 'metaworld-ml1-reach-v1':
+		cmd = ml1_reach(args.seed, args.log_id, args.gpu_id)
+
+	elif args.env_name == 'metaworld-ml1-pick-place-v1':
+		cmd = ml1_pick_place(args.seed, args.log_id, args.gpu_id)
 	# run the code
 	print(cmd)
 	os.system(cmd)

@@ -1,0 +1,5 @@
+{"metaworld-ml1-push-v1": {"n_train_tasks": 50, "n_eval_tasks": 10, "n_tasks": 60, "randomize_tasks": true},
+ "metaworld-ml1-reach-v1": {"n_train_tasks": 50, "n_eval_tasks": 10, "n_tasks": 60, "randomize_tasks": true},
+ "metaworld-ml1-pick-place-v1": {"n_train_tasks": 50, "n_eval_tasks": 10, "n_tasks": 60, "randomize_tasks": true},
+ "metaworld-ml1-reach-wall-v1": {"n_train_tasks": 50, "n_eval_tasks": 10, "n_tasks": 60, "randomize_tasks": true},
+ "metaworld-ml1-sweep-into-v1": {"n_train_tasks": 50, "n_eval_tasks": 10, "n_tasks": 60, "randomize_tasks": true}}

@@ -61,7 +61,7 @@ class Runner:
         # Given batching schema, I need to build a full seq to keep in replay buffer
         # Add to all zeros.
         zero_action = np.zeros(self.env.action_space.shape[0])
-        zero_obs    = np.zeros(obs.shape)
+        zero_obs = np.zeros(obs.shape)
         for _ in range(self.hist_len):
             rewards_hist.append(0)
             actions_hist.append(zero_action.copy())
