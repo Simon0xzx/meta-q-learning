@@ -38,7 +38,6 @@ parser.add_argument('--cuda_deterministic', default=True, action='store_true')
 parser.add_argument("--gpu_id", default=1, type=int)
 
 parser.add_argument('--log_id', default='default')
-parser.add_argument('--check_point_dir', default='./data/ck')
 parser.add_argument('--log_dir', default='./result/mql_ml1/')
 parser.add_argument('--log_interval', type=int, default=10, help='log interval, one log per n updates')
 parser.add_argument('--save_freq', type=int, default = 250)
@@ -46,7 +45,7 @@ parser.add_argument("--eval_freq", default=10000, type=float, help = 'How often 
 parser.add_argument("--num_evals", default=4, type=int, help = 'tasks parameters number of task evaluated')
 
 # Env
-parser.add_argument('--env_configs', default='./configs/pearl_envs.json')
+parser.add_argument('--env_configs', default='./configs/metaworld_envs.json')
 parser.add_argument('--max_path_length', type=int, default = 200)
 parser.add_argument('--enable_train_eval', default=False, action='store_true')
 parser.add_argument('--enable_promp_envs', default=False, action='store_true')
@@ -127,14 +126,14 @@ def take_snapshot(args, ck_fname_part, model, update):
 def setup_logAndCheckpoints(args):
 
     # create folder if not there
-    create_dir(args.check_point_dir)
+    create_dir(args.log_dir)
 
     fname = str.lower(args.env_name) + '_' + args.alg_name + '_' + args.log_id
     fname_log = os.path.join(args.log_dir, fname)
     fname_eval = os.path.join(fname_log, 'eval.csv')
     fname_adapt = os.path.join(fname_log, 'adapt.csv')
 
-    return os.path.join(args.check_point_dir, fname), fname_log, fname_eval, fname_adapt
+    return os.path.join(args.log_dir, fname), fname_log, fname_eval, fname_adapt
 
 def make_env(eparams):
     '''
