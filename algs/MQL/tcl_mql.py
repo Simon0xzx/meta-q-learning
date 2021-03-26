@@ -637,6 +637,10 @@ class TCLMQL:
                 for param, target_param in zip(self.context.network[0].parameters(), self.context.network[1].parameters()):
                     target_param.data.copy_(self.ptau * param.data + (1 - self.ptau) * target_param.data)
 
+                if self.context.enable_masking:
+                    for param, target_param in zip(self.context.network[2].parameters(), self.context.network[3].parameters()):
+                        target_param.data.copy_(self.ptau * param.data + (1 - self.ptau) * target_param.data)
+
         out = {}
         out['critic_loss'] = critic_loss_out/iterations
         out['actor_loss'] = self.policy_freq * actor_loss_out/iterations
