@@ -448,6 +448,9 @@ class TCLMQL:
                 critic_prox_out += critic_prox.item()
 
             # 4. Optimize the critic
+            self.context_optimizer.zero_grad()
+            if self.context.enable_masking:
+                self.context_mlp_optimizer.zero_grad()
             self.critic_optimizer.zero_grad()
             critic_loss.backward(retain_graph=True)
             self.critic_optimizer.step()
@@ -461,9 +464,8 @@ class TCLMQL:
             # Delayed policy updates
             ########
             if it % self.policy_freq == 0:
-
                 # Compute actor loss
-                actor_loss_temp = -1 * beta_score * self.critic.Q1(obs, self.actor(obs, pre_act_rew_latent), pre_act_rew_latent)
+                actor_loss_temp = -1 * beta_score * self.critic.Q1(obs, self.actor(obs, pre_act_rew_latent.detach()), pre_act_rew_latent.detach())
                 actor_loss = actor_loss_temp.mean()
                 actor_loss_out += actor_loss.item()
 
@@ -601,6 +603,9 @@ class TCLMQL:
             critic_loss_out += critic_loss.item()
 
             # 4. Optimize the critic
+            self.context_optimizer.zero_grad()
+            if self.context.enable_masking:
+                self.context_mlp_optimizer.zero_grad()
             self.critic_optimizer.zero_grad()
             critic_loss.backward(retain_graph=True)
             self.critic_optimizer.step()
@@ -617,7 +622,7 @@ class TCLMQL:
             if it % self.policy_freq == 0:
 
                 # Compute actor loss
-                actor_loss = -self.critic.Q1(obs, self.actor(obs, pre_act_rew_latent), pre_act_rew_latent).mean()
+                actor_loss = -self.critic.Q1(obs, self.actor(obs, pre_act_rew_latent.detach()), pre_act_rew_latent.detach()).mean()
                 actor_loss_out += actor_loss.item()
 
                 # Optimize the actor
