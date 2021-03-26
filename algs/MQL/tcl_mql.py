@@ -608,6 +608,8 @@ class TCLMQL:
             # update context encoder
             contrastive_loss.backward()
             self.context_optimizer.step()
+            if self.context.enable_masking:
+                self.context_mlp_optimizer.step()
             contrastive_loss_out += contrastive_loss.item()
             ########
             # Delayed policy updates
