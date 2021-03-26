@@ -24,29 +24,29 @@ conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-sweep
 
 --jormungandr--
 sudo tmux new -s tcl_mql_itr2_push
-conda activate pearl;python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 7
+python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 7
 sudo tmux new -s tcl_mql_itr2_reach
-conda activate pearl;python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 6
+python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-reach-v1 --seed 2 --gpu_id 6
 sudo tmux new -s tcl_mql_itr2_pick-place
-conda activate pearl;python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 5
+python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 5
 
 sudo tmux new -s tcl_mql_itr3_push
-conda activate pearl;python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 7
+python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 7
 sudo tmux new -s tcl_mql_itr3_reach
-conda activate pearl;python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 6
+python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 6
 sudo tmux new -s tcl_mql_itr3_pick-place
-conda activate pearl;python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 5
+python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 5
 
 sudo tmux new -s tcl_mql_itr4_push
-conda activate pearl;python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 4
+python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 4
 sudo tmux new -s tcl_mql_itr4_reach
-conda activate pearl;python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 3
+python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 3
 sudo tmux new -s tcl_mql_itr4_pick-place
-conda activate pearl;python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 2
+python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 2
 
 sudo tmux new -s tcl_mql_itr5_push
-conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 4
+python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 4
 sudo tmux new -s tcl_mql_itr5_reach
-conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 3
+python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 3
 sudo tmux new -s tcl_mql_itr5_pick-place
-conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 2
+python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 2

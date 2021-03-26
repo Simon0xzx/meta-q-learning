@@ -132,7 +132,7 @@ class TCLContext(nn.Module):
 
         if self.enable_masking:
             self.query_mlp = nn.Sequential(
-                nn.Linear(input_dim, 200),
+                nn.Linear(self.hidden_sizes[0], 100),
                 nn.ReLU(),
                 nn.Linear(100, self.output_dim),
                 nn.ReLU())
