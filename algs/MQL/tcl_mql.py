@@ -311,8 +311,8 @@ class TCLMQL:
         x, y, u, r, d, pu, pr, px, nu, nr, nx = replay_buffer.sample(batch_size=self.embedding_batch_size)
 
         # Do augmentation
-        aug1_idx = np.random.rand(self.context_history_length - self.augment_window)
-        aug2_idx = np.random.rand(self.context_history_length - self.augment_window)
+        aug1_idx = np.random.randint(0, self.context_history_length - self.augment_window)
+        aug2_idx = np.random.randint(0, self.context_history_length - self.augment_window)
         print("Contrastive loss, pu shape {}".format(pu.shape))
         aug1_act = torch.FloatTensor(pu[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
         aug1_rew = torch.FloatTensor(pr[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
