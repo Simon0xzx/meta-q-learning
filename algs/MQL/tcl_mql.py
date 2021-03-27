@@ -313,14 +313,14 @@ class TCLMQL:
         # Do augmentation
         aug1_idx = np.random.rand(self.context_history_length - self.augment_window)
         aug2_idx = np.random.rand(self.context_history_length - self.augment_window)
+        print("Contrastive loss, pu shape {}".format(pu.shape))
+        aug1_act = torch.FloatTensor(pu[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
+        aug1_rew = torch.FloatTensor(pr[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
+        aug1_obs = torch.FloatTensor(px[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
 
-        aug1_act = torch.FloatTensor(pu[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
-        aug1_rew = torch.FloatTensor(pr[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
-        aug1_obs = torch.FloatTensor(px[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
-
-        aug2_act = torch.FloatTensor(pu[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
-        aug2_rew = torch.FloatTensor(pr[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
-        aug2_obs = torch.FloatTensor(px[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        aug2_act = torch.FloatTensor(pu[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        aug2_rew = torch.FloatTensor(pr[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        aug2_obs = torch.FloatTensor(px[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
 
         # combine reward and action
         aug1_context = [aug1_act, aug1_rew, aug1_obs]

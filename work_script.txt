@@ -65,36 +65,38 @@ conda activate pearl;python tcl_main.py --log_id tcl_mql6 --env_name metaworld-m
 
 
 
-
+--jormungandr--
 Iter 7: [enable_context_masking -> False] [embedding_batch_size ->2048] [contrastive_temperature -> 10] [history_length -> 25] [augment_window -> 8]
 sudo tmux new -s tcl_mql_itr7_push
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-push-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-push-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 1
 sudo tmux new -s tcl_mql_itr7_reach
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 1
 sudo tmux new -s tcl_mql_itr7_pick-place
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 2
 sudo tmux new -s tcl_mql_itr7_reach-wall
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-reach-wall-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-reach-wall-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 2
 sudo tmux new -s tcl_mql_itr7_sweep-into
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-sweep-into-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-sweep-into-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 3
 sudo tmux new -s tcl_mql_itr7_button-press
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-button-press-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-button-press-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 3
 sudo tmux new -s tcl_mql_itr7_button-press-topdown
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-button-press-topdown-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-button-press-topdown-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 4
 sudo tmux new -s tcl_mql_itr7_hand-insert
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-hand-insert-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-hand-insert-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 4
 sudo tmux new -s tcl_mql_itr7_sweep
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-sweep-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-sweep-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 5
 sudo tmux new -s tcl_mql_itr7_window-close
-conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-window-close-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python tcl_main.py --log_id tcl_mql7 --env_name metaworld-ml1-window-close-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 5
 
+
+--namazu--
 sudo tmux new -s mql_button-press
-conda activate pearl;python main.py --log_id mql --env_name metaworld-ml1-button-press-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python main.py --log_id mql --seed 4 --gpu_id 6
 sudo tmux new -s mql_button-press-topdown
-conda activate pearl;python tcl_main.py --log_id mql --env_name metaworld-ml1-button-press-topdown-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python main.py --log_id mql --seed 4 --gpu_id 1
 sudo tmux new -s mql_hand-insert
-conda activate pearl;python tcl_main.py --log_id mql --env_name metaworld-ml1-hand-insert-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python main.py --log_id mql --seed 4 --gpu_id 1
 sudo tmux new -s mql_sweep
-conda activate pearl;python tcl_main.py --log_id mql --env_name metaworld-ml1-sweep-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python main.py --log_id mql --seed 4 --gpu_id 1
 sudo tmux new -s mql_window-close
-conda activate pearl;python tcl_main.py --log_id mql --env_name metaworld-ml1-window-close-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --history_length 25 --augment_window 8 --seed 4 --gpu_id 6
+conda activate pearl;python main.py --log_id mql --seed 4 --gpu_id 1
