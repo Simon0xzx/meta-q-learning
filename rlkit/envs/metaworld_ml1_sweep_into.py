@@ -1,6 +1,4 @@
 import numpy as np
-
-from gym.envs.mujoco import HumanoidEnv as HumanoidEnv
 import metaworld
 from . import register_env
 

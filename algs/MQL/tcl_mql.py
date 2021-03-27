@@ -36,6 +36,8 @@ class TCLMQL:
                 use_ess_clipping = False,
                 use_normalized_beta = True,
                 reset_optims = False,
+                context_history_length=64,
+                augment_window=16
                 ):
 
         '''
@@ -78,6 +80,9 @@ class TCLMQL:
         self.set_training_style()
         self.lr = lr
         self.reset_optims = reset_optims
+
+        self.context_history_length=context_history_length
+        self.augment_window=augment_window
 
         # load tragtes models.
         self.actor_target.load_state_dict(self.actor.state_dict())
@@ -304,28 +309,25 @@ class TCLMQL:
     def calc_contrastive_loss(self, replay_buffer):
         # Take this short segment of trajectory as a path
         x, y, u, r, d, pu, pr, px, nu, nr, nx = replay_buffer.sample(batch_size=self.embedding_batch_size)
-        previous_action = torch.FloatTensor(pu).to(self.device)
-        previous_reward = torch.FloatTensor(pr).to(self.device)
-        previous_obs = torch.FloatTensor(px).to(self.device)
 
-        # list of hist_actions and hist_rewards which are one time ahead of previous_ones
-        # example:
-        # previous_action = [t-3, t-2, t-1]
-        # hist_actions    = [t-2, t-1, t]
-        hist_actions = torch.FloatTensor(nu).to(self.device)
-        hist_rewards = torch.FloatTensor(nr).to(self.device)
-        hist_obs = torch.FloatTensor(nx).to(self.device)
+        # Do augmentation
+        aug1_idx = np.random.rand(self.context_history_length - self.augment_window)
+        aug2_idx = np.random.rand(self.context_history_length - self.augment_window)
+
+        aug1_act = torch.FloatTensor(pu[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
+        aug1_rew = torch.FloatTensor(pr[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
+        aug1_obs = torch.FloatTensor(px[aug1_idx: aug1_idx+self.augment_window]).to(self.device)
+
+        aug2_act = torch.FloatTensor(pu[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        aug2_rew = torch.FloatTensor(pr[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        aug2_obs = torch.FloatTensor(px[aug2_idx: aug2_idx + self.augment_window]).to(self.device)
 
         # combine reward and action
-        next_window = [hist_actions, hist_rewards, hist_obs]  # torch.cat([action, reward], dim = -1)
-        pre_window = [previous_action, previous_reward, previous_obs]  # torch.cat([previous_action, previous_reward], dim = -1)
+        aug1_context = [aug1_act, aug1_rew, aug1_obs]
+        aug2_context = [aug2_act, aug2_rew, aug2_obs]
 
-        query_latent = self.context.get_query_latent(next_window)
-        # pre_query_latent = self.context(pre_window)
-        # query_latent = torch.cat([next_query_latent, pre_query_latent], dim = 0)
-        key_latent = self.context.get_key_latent(pre_window)
-        # next_key_latent = self.context.get_key_latent(next_window)
-        # key_latent = torch.cat([pre_key_latent, next_key_latent], dim=0)
+        query_latent = self.context.get_query_latent(aug1_context)
+        key_latent = self.context.get_key_latent(aug2_context)
 
         query_norm = torch.sum((query_latent ** 2), dim=1).view(-1, 1)
         key_norm = torch.sum((key_latent ** 2), dim=1).view(1, -1)

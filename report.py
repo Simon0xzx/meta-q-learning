@@ -50,9 +50,9 @@ def report_namazu():
     plt.show()
 
 def report_jormungandr():
-    root_dir = "/home/simon0xzx/research/berkely_research/meta-q-learning/external_data/jormungandr_result/tcl_mql_ml1"
+    root_dir = "/Users/simon/Research/meta-q-learning/external_data/jormungandr_result/tcl_mql_ml1"
 
-    namazu_dir = "/home/simon0xzx/research/berkely_research/meta-q-learning/external_data/namazu_result"
+    namazu_dir = "/Users/simon/Research/meta-q-learning/external_data/namazu_result"
     tcl_mql_itr1_target = [('reach', 'tcl_mql_ml1/metaworld-ml1-reach-v1_mql_tcl_mql','iter1'),
                            ('push', 'tcl_mql_ml1/metaworld-ml1-push-v1_mql_tcl_mql','iter1'),
                            ('pick-place', 'tcl_mql_ml1/metaworld-ml1-pick-place-v1_mql_tcl_mql','iter1')]
@@ -71,14 +71,19 @@ def report_jormungandr():
     tcl_mql_itr5_target = [('reach', 'metaworld-ml1-reach-v1_mql_tcl_mql5', 'iter5'),
                            ('push', 'metaworld-ml1-push-v1_mql_tcl_mql5', 'iter5'),
                            ('pick-place', 'metaworld-ml1-pick-place-v1_mql_tcl_mql5', 'iter5')]
+    tcl_mql_itr6_target = [('reach', 'tcl_mql_ml1/metaworld-ml1-reach-v1_mql_tcl_mql6', 'iter6'),
+                           ('push', 'tcl_mql_ml1/metaworld-ml1-push-v1_mql_tcl_mql6', 'iter6'),
+                           ('pick-place', 'tcl_mql_ml1/metaworld-ml1-pick-place-v1_mql_tcl_mql6', 'iter6'),]
     row, col = 1, 3
     fig, axs = plt.subplots(row, col)
-    plot_curve(axs, namazu_dir, mql_plot_target, row=row, col=col)
-    plot_curve(axs, namazu_dir, tcl_mql_itr1_target, row=row, col=col)
+    # plot_curve(axs, namazu_dir, mql_plot_target, row=row, col=col)
+    # plot_curve(axs, namazu_dir, tcl_mql_itr1_target, row=row, col=col)
     plot_curve(axs, root_dir, tcl_mql_itr2_target, row=row, col=col)
     plot_curve(axs, root_dir, tcl_mql_itr3_target, row=row, col=col)
     plot_curve(axs, root_dir, tcl_mql_itr4_target, row=row, col=col)
     plot_curve(axs, root_dir, tcl_mql_itr5_target, row=row, col=col)
+    plot_curve(axs, namazu_dir, tcl_mql_itr6_target, row=row, col=col)
+
 
 
     plt.show()

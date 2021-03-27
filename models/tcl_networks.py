@@ -111,6 +111,7 @@ class TCLContext(nn.Module):
                  action_dim = None,
                  obsr_dim = None,
                  enable_masking = False,
+                 enable_probabilistic_encoding = False,
                  device = 'cpu'):
 
         super(TCLContext, self).__init__()
@@ -121,10 +122,15 @@ class TCLContext(nn.Module):
         self.action_dim = action_dim
         self.obsr_dim = obsr_dim
         self.enable_masking = enable_masking
+        self.enable_probabilistic_encoding = enable_probabilistic_encoding
+
+        self.gru_output_dim = self.hidden_sizes[0]
+        if self.enable_probabilistic_encoding:
+            self.gru_output_dim = self.gru_output_dim # currently don't do too much fancy stuff
 
         #### build LSTM or GRU for both query and key
         self.query_recur = nn.GRU(self.input_dim,
-                                self.hidden_sizes[0],
+                                self.gru_output_dim,
                                 bidirectional = False,
                                 batch_first = True,
                                 num_layers = 1)
@@ -132,7 +138,7 @@ class TCLContext(nn.Module):
 
         if self.enable_masking:
             self.query_mlp = nn.Sequential(
-                nn.Linear(self.hidden_sizes[0], 100),
+                nn.Linear(self.gru_output_dim, 100),
                 nn.ReLU(),
                 nn.Linear(100, self.output_dim),
                 nn.ReLU())

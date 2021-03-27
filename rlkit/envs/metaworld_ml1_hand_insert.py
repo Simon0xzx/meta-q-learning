@@ -1,12 +1,11 @@
 import numpy as np
 import metaworld
 from . import register_env
-
-@register_env('metaworld-ml1-pick-place-v1')
-class MetaworldML1PickPlaceEnv(metaworld.ML1):
+@register_env('metaworld-ml1-hand-insert-v1')
+class MetaworldML1HandInsertEnv(metaworld.ML1):
     def __init__(self, n_tasks=50, randomize_tasks=True):
-        super(MetaworldML1PickPlaceEnv, self).__init__('pick-place-v1')
-        self._env = self.train_classes['pick-place-v1']()
+        super(MetaworldML1HandInsertEnv, self).__init__('hand-insert-v1')
+        self._env = self.train_classes['hand-insert-v1']()
         self.tasks = self.train_tasks
         self.reset_task(0)
         print("Init metaworld env")

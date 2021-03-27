@@ -37,7 +37,7 @@ parser.add_argument('--disable_cuda', default=False, action='store_true')
 parser.add_argument('--cuda_deterministic', default=True, action='store_true')
 parser.add_argument("--gpu_id", default=1, type=int)
 
-parser.add_argument('--log_id', default='default')
+parser.add_argument('--log_id', default='mql')
 parser.add_argument('--log_dir', default='./result/mql_ml1/')
 parser.add_argument('--log_interval', type=int, default=10, help='log interval, one log per n updates')
 parser.add_argument('--save_freq', type=int, default = 250)

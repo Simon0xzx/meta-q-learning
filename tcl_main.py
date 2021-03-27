@@ -60,6 +60,9 @@ parser.add_argument('--num_tasks_sample', type=int, default = 5)
 parser.add_argument('--num_train_steps', type=int, default = 1000)
 parser.add_argument('--min_buffer_size', type=int, default = 100000, help = 'this indicates a condition to start using num_train_steps')
 parser.add_argument('--history_length', type=int, default = 25)
+parser.add_argument('--augment_window', type=int, default = 8) # TODO [iter 7 added -> 8]
+parser.add_argument('--enable_probabilistic_encoding', default=False, type=bool) # TODO [iter 7 added ->    ]
+
 
 #other params
 parser.add_argument('--beta_clip', default=1.2, type=float, help='Range to clip beta term in CSC')
@@ -82,7 +85,7 @@ parser.add_argument('--lr_milestone', default = -1, type=int, help = 'reduce lea
 parser.add_argument('--lr_gamma', default = 0.8, type=float, help = 'learning rate decay')
 
 parser.add_argument('--embedding_batch_size', default=2048, type=int, help ='Batch Size to conduct contrastive learning') # TODO Added in [iter 2 4096->2048] [iter 3 2048->1024]
-parser.add_argument('--enable_context_masking', default=False, action='store_true', help='whether we should add additional mlp later after GRU unit') # TODO added in [iter 2 -> set true]
+parser.add_argument('--enable_context_masking', default=False, type=bool, help='whether we should add additional mlp later after GRU unit') # TODO added in [iter 2 -> set true]
 parser.add_argument('--contrastive_temperature', default=1, type=float, help='temperature of contrastive loss') # TODO added in [iter 4 -> 0.1] [iter 5 -> 10]
 def update_lr(eparams, iter_num, alg_mth):
     #######
@@ -567,6 +570,7 @@ if __name__ == "__main__":
                                  action_dim=action_dim,
                                  enable_masking=args.enable_context_masking,
                                  obsr_dim=env.observation_space.shape[0],
+                                 enable_probabilistic_encoding = args.enable_probabilistic_encoding,
                                  device=device).to(device)
 
     else:
@@ -609,6 +613,8 @@ if __name__ == "__main__":
                         enable_beta_obs_cxt = args.enable_beta_obs_cxt,
                         use_normalized_beta = args.use_normalized_beta,
                         reset_optims = args.reset_optims,
+                        context_history_length = args.history_length,
+                        augment_window = args.augment_window,
                         device = device,
                     )
         ##### rollout/batch generator

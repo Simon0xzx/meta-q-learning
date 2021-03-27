@@ -124,7 +124,8 @@ class Runner:
             np_next_hacts = np.asarray(next_hacts, dtype=np.float32).flatten()  #(hist, action_dim) => (hist *action_dim,)
             np_next_hrews = np.asarray(next_hrews, dtype=np.float32) #(hist, )
             np_next_hobvs = np.asarray(next_hobvs, dtype=np.float32).flatten() #(hist, )
-
+            # np_pre_actions: [a_{t-2}, a_{t-1}]
+            # np_next_hacts:  [a_{t-1}, a_{t}]
             # Store data in replay buffer
             self.replay_buffer.add((obs, new_obs, action, reward, done_bool,
                                     np_pre_actions, np_pre_rewards, np_pre_obsers,
