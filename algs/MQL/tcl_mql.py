@@ -78,7 +78,7 @@ class TCLMQL:
         self.set_training_style()
         self.lr = lr
         self.reset_optims = reset_optims
-
+        self.enable_prabablistic_latent = enable_prabablistic_latent
 
         # load tragtes models.
         self.actor_target.load_state_dict(self.actor.state_dict())

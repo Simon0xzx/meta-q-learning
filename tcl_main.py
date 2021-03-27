@@ -82,10 +82,8 @@ parser.add_argument('--lr_milestone', default = -1, type=int, help = 'reduce lea
 parser.add_argument('--lr_gamma', default = 0.8, type=float, help = 'learning rate decay')
 
 parser.add_argument('--embedding_batch_size', default=2048, type=int, help ='Batch Size to conduct contrastive learning') # TODO Added in [iter 2 4096->2048] [iter 3 2048->1024]
-parser.add_argument('--enable_context_masking', default=True, action='store_true', help='whether we should add additional mlp later after GRU unit') # TODO added in [iter 2 -> set true]
+parser.add_argument('--enable_context_masking', default=False, action='store_true', help='whether we should add additional mlp later after GRU unit') # TODO added in [iter 2 -> set true]
 parser.add_argument('--contrastive_temperature', default=1, type=float, help='temperature of contrastive loss') # TODO added in [iter 4 -> 0.1] [iter 5 -> 10]
-
-
 def update_lr(eparams, iter_num, alg_mth):
     #######
     # initial_lr if i < reduce_lr

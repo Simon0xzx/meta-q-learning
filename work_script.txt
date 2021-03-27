@@ -23,6 +23,7 @@ conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-reach
 conda activate pearl;python main.py  --log_id mql --env_name metaworld-ml1-sweep-into-v1 --seed 2 --gpu_id 5
 
 --jormungandr--
+Iter 2: [embedding_batch_size 4096->2048] [enable_context_masking -> True]
 sudo tmux a -t tcl_mql_itr2_push
 python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-push-v1 --seed 2 --gpu_id 7
 sudo tmux a -t tcl_mql_itr2_reach
@@ -30,6 +31,7 @@ python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-reach-v1 --seed 2 
 sudo tmux a -t tcl_mql_itr2_pick-place
 python tcl_main.py --log_id tcl_mql2 --env_name metaworld-ml1-pick-place-v1 --seed 2 --gpu_id 5
 
+Iter 3: [embedding_batch_size 2048->1024]
 sudo tmux a -t tcl_mql_itr3_push
 python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 7
 sudo tmux a -t tcl_mql_itr3_reach
@@ -37,6 +39,7 @@ python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-reach-v1 --embeddi
 sudo tmux a -t tcl_mql_itr3_pick-place
 python tcl_main.py --log_id tcl_mql3 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --seed 2 --gpu_id 5
 
+Iter 4: [contrastive_temperature -> 0.1]
 sudo tmux a -t tcl_mql_itr4_push
 python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 4
 sudo tmux a -t tcl_mql_itr4_reach
@@ -44,9 +47,18 @@ python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-reach-v1 --embeddi
 sudo tmux a -t tcl_mql_itr4_pick-place
 python tcl_main.py --log_id tcl_mql4 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 0.1 --seed 2 --gpu_id 2
 
+Iter 5:  [contrastive_temperature -> 10]
 sudo tmux a -t tcl_mql_itr5_push
 python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-push-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 4
 sudo tmux a -t tcl_mql_itr5_reach
 python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 3
 sudo tmux a -t tcl_mql_itr5_pick-place
 python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 1024 --contrastive_temperature 10 --seed 2 --gpu_id 2
+
+Iter 6: [enable_context_masking -> False] [embedding_batch_size ->2048] [contrastive_temperature -> 10]
+sudo tmux new -s tcl_mql_itr6_push
+conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-push-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --seed 3 --gpu_id 6
+sudo tmux new -s tcl_mql_itr6_reach
+conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-reach-v1 --embedding_batch_size 2048 --contrastive_temperature 10 --seed 3 --gpu_id 6
+sudo tmux new -s tcl_mql_itr6_pick-place
+conda activate pearl;python tcl_main.py --log_id tcl_mql5 --env_name metaworld-ml1-pick-place-v1 --embedding_batch_size 2048 --contrastive_temperature 10 -seed 3 --gpu_id 6
