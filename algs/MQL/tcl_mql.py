@@ -313,14 +313,19 @@ class TCLMQL:
         # Do augmentation
         aug1_idx = np.random.randint(0, self.context_history_length - self.augment_window)
         aug2_idx = np.random.randint(0, self.context_history_length - self.augment_window)
-        print("Contrastive loss, pu shape {}".format(pu.shape))
-        aug1_act = torch.FloatTensor(pu[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
-        aug1_rew = torch.FloatTensor(pr[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
-        aug1_obs = torch.FloatTensor(px[:, aug1_idx: aug1_idx+self.augment_window]).to(self.device)
 
-        aug2_act = torch.FloatTensor(pu[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
-        aug2_rew = torch.FloatTensor(pr[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
-        aug2_obs = torch.FloatTensor(px[:, aug2_idx: aug2_idx + self.augment_window]).to(self.device)
+        bsize, dim = pu.shape  # previous_action is B* (history_len * D)
+        pacts = pu.view(bsize, -1, self.context.action_dim)  # view(bsize, self.hist_length, -1)
+        prews = pr.view(bsize, -1, 1)  # reward dim is 1, view(bsize, self.hist_length, 1)
+        pxs = px.view(bsize, -1, self.context.obsr_dim)  # view(bsize, self.hist_length, -1)
+
+        aug1_act = torch.FloatTensor(pacts[:, aug1_idx: aug1_idx+self.augment_window, :].view(bsize, -1)).to(self.device)
+        aug1_rew = torch.FloatTensor(prews[:, aug1_idx: aug1_idx+self.augment_window, :].view(bsize, -1)).to(self.device)
+        aug1_obs = torch.FloatTensor(pxs[:, aug1_idx: aug1_idx+self.augment_window, :].view(bsize, -1)).to(self.device)
+
+        aug2_act = torch.FloatTensor(pacts[:, aug2_idx: aug2_idx + self.augment_window, :].view(bsize, -1)).to(self.device)
+        aug2_rew = torch.FloatTensor(prews[:, aug2_idx: aug2_idx + self.augment_window, :].view(bsize, -1)).to(self.device)
+        aug2_obs = torch.FloatTensor(pxs[:, aug2_idx: aug2_idx + self.augment_window, :].view(bsize, -1)).to(self.device)
 
         # combine reward and action
         aug1_context = [aug1_act, aug1_rew, aug1_obs]
