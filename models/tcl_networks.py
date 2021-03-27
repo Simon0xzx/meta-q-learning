@@ -215,4 +215,7 @@ class TCLContext(nn.Module):
 
     @property
     def network(self):
-        return [self.query_recur, self.key_recur, self.query_mlp, self.key_mlp]
+        nets = [self.query_recur, self.key_recur]
+        if self.enable_masking:
+            nets.extend([self.query_mlp, self.key_mlp])
+        return nets
